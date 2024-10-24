@@ -1,4 +1,5 @@
 ﻿using Entity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using System;
@@ -12,14 +13,17 @@ namespace ReadLater5.Controllers
     public class CategoriesController : Controller
     {
         ICategoryService _categoryService;
-        public CategoriesController(ICategoryService categoryService)
+        private readonly UserManager<IdentityUser> _userManager;
+        public CategoriesController(ICategoryService categoryService, UserManager<IdentityUser> userManager)
         {
             _categoryService = categoryService;
+            _userManager = userManager;
         }
         // GET: Categories
         public IActionResult Index()
         {
-            List<Category> model = _categoryService.GetCategories();
+            var userId = _userManager.GetUserId(User);
+            List<Category> model = _categoryService.GetCategories(userId);
             return View(model);
         }
 
@@ -52,13 +56,33 @@ namespace ReadLater5.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
         {
+            var userId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
+                category.UserId = userId;
                 _categoryService.CreateCategory(category);
                 return RedirectToAction("Index");
             }
 
             return View(category);
+        }
+
+
+        //POST: Categories/CreateAjax
+        [HttpPost]
+        public IActionResult CreateAjax(string Name)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (!string.IsNullOrEmpty(Name))
+            {
+                var category = new Category { Name = Name };
+                category.UserId = userId;
+                _categoryService.CreateCategory(category);
+
+                return Json(new { id = category.ID, name = category.Name });
+            }
+
+            return BadRequest();
         }
 
         // GET: Categories/Edit/5

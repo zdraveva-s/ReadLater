@@ -1,0 +1,97 @@
+﻿@model Entity.Bookmark
+
+@{
+    ViewBag.Title = "Create Bookmark";
+}
+
+<h2>Create Bookmark</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.URL, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.URL, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.URL, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ShortDescription, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ShortDescription, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ShortDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryId, "Category", new { @class = "control-label" })
+            <div class="col-md-10">
+                <select id="CategoryId" name="CategoryId" class="form-control">
+                    <option value="">Select a category</option>
+                    @foreach (var category in ViewBag.Categories as List<Entity.Category>)
+                    {
+                        <option value="@category.ID">@category.Name</option>
+                    }
+                </select>
+                <br />
+                <button id="createCategoryBtn" type="button" class="btn btn-primary">Create New Category</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+
+    <div id="createCategoryModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Category</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input id="newCategoryName" type="text" class="form-control" placeholder="Category Name" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="saveCategoryBtn" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#createCategoryBtn').click(function () {
+                $('#createCategoryModal').modal('show');
+            });
+
+            $('#saveCategoryBtn').click(function () {
+                var newCategoryName = $('#newCategoryName').val();
+                if (newCategoryName) {
+                    $.ajax({
+                        url: '/Categories/CreateAjax',
+                        type: 'POST',
+                        data: { Name: newCategoryName },
+                        success: function (data) {
+                            $('#createCategoryModal').modal('hide');
+                            var newOption = new Option(newCategoryName, data.id, true, true);
+                            $('#CategoryId').append(newOption).trigger('change');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+

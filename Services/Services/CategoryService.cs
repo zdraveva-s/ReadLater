@@ -29,9 +29,9 @@ namespace Services
             _ReadLaterDataContext.SaveChanges();
         }
 
-        public List<Category> GetCategories()
+        public List<Category> GetCategories(string userId)
         {
-            return _ReadLaterDataContext.Categories.ToList();
+            return _ReadLaterDataContext.Categories.Where(c => c.UserId == userId).ToList();
         }
 
         public Category GetCategory(int Id)
@@ -46,6 +46,16 @@ namespace Services
 
         public void DeleteCategory(Category category)
         {
+            var bookmarks = _ReadLaterDataContext.Bookmark
+                      .Where(b => b.CategoryId == category.ID)
+                      .ToList();
+
+            foreach (var bookmark in bookmarks)
+            {
+                bookmark.CategoryId = null;
+            }
+
+            _ReadLaterDataContext.SaveChanges();
             _ReadLaterDataContext.Categories.Remove(category);
             _ReadLaterDataContext.SaveChanges();
         }

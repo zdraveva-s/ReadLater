@@ -1,0 +1,30 @@
+﻿@model Entity.Bookmark
+
+@{
+    ViewBag.Title = "Bookmark Details";
+}
+
+<h2>Bookmark Details</h2>
+
+<div>
+    <h4>Bookmark</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>URL</dt>
+        <dd>@Model.URL</dd>
+
+        <dt>Short Description</dt>
+        <dd>@Model.ShortDescription</dd>
+
+        <dt>Category</dt>
+        <dd>@(Model.Category?.Name ?? "No Category")</dd>
+
+        <dt>Date Created</dt>
+        <dd>@Model.CreateDate.ToString("MM/dd/yyyy")</dd>
+    </dl>
+</div>
+
+<p>
+    <a href="@Url.Action("Edit", new { id = Model.ID })" class="btn btn-primary">Edit</a> |
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+</p>

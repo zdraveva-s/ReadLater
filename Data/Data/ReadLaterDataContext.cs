@@ -1,15 +1,11 @@
 ﻿using Entity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data
 {
-    public class ReadLaterDataContext : IdentityDbContext
+    public class ReadLaterDataContext : IdentityDbContext<IdentityUser>
 
     {
         public ReadLaterDataContext(DbContextOptions<ReadLaterDataContext> options) : base(options)

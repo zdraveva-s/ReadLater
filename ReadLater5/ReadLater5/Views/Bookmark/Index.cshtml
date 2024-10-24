@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Entity.Bookmark>
+
+@{
+    ViewBag.Title = "Bookmarks";
+}
+
+<h2>Bookmarks</h2>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        <a href="@Url.Action("Create")" class="btn btn-primary">Create New Bookmark</a>
+    </p>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Short Description</th>
+                <th>Category</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bookmark in Model)
+            {
+                <tr>
+                    <td>@bookmark.URL</td>
+                    <td>@bookmark.ShortDescription</td>
+                    <td>@(bookmark.Category?.Name ?? "No Category")</td>
+                    <td>@bookmark.CreateDate.ToString("MM/dd/yyyy")</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = bookmark.ID })" class="btn btn-info">Details</a> |
+                        <a href="@Url.Action("Edit", new { id = bookmark.ID })" class="btn btn-warning">Edit</a> |
+                        <a href="@Url.Action("Delete", new { id = bookmark.ID })" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>You need to <a href="@Url.Action("Login", "Account")">log in</a> to see your bookmarks.</p>
+}
